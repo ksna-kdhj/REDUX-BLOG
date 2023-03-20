@@ -1,9 +1,7 @@
 import { useSelector,useDispatch } from 'react-redux'
-import { fetchUsers, selectAllUsers } from './usersSlice'
-import { useEffect } from 'react'
+import { selectAllUsers } from './usersSlice'
 import { Link } from 'react-router-dom'
 const UsersList = () => {
-  const dispatch = useDispatch()
   const users = useSelector(selectAllUsers)
   const renderedUsers = users.map(user => (
   <li key={user.id}>
@@ -12,9 +10,6 @@ const UsersList = () => {
     </Link>
   </li>))
 
-  useEffect(()=>{
-    dispatch(fetchUsers()).unwrap()
-  },[users])
     return (
         <section>
             <h2>Users</h2>

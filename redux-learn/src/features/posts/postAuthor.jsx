@@ -1,7 +1,6 @@
-import { useSelector,useDispatch } from "react-redux";
-import { useEffect } from "react";
-import {selectAllUsers,fetchUsers} from "../users/usersSlice";
-
+import { useSelector } from "react-redux";
+import {selectAllUsers} from "../users/usersSlice";
+import { Link } from "react-router-dom";
 const postAuthor = ({userId}) => {
   // const dispatch = useDispatch()
 //   useEffect(()=>{
@@ -9,7 +8,7 @@ const postAuthor = ({userId}) => {
 // },[])
   const users = useSelector(selectAllUsers)
   const author = users.find(user => user.id === userId)
-  return <span>by {author? author.name:'Uknown author'}</span>
+  return <span>by {author?<Link to={`/users/${userId}`}>{author.name}</Link>:'Uknown author'}</span>
 }
 
 export default postAuthor

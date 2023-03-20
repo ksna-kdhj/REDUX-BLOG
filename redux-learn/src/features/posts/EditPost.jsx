@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
-import { selectPostById, editPost, fetchPosts} from '../posts/postsSlice'
+import { selectPostById} from '../posts/postsSlice'
 import { selectAllUsers } from "../users/usersSlice";
 import { useSelector,useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { deletePost } from "../posts/postsSlice";
+import {useDeletePostMutation,useUpdatePostMutation} from '../posts/postsSlice'
 const lskey = 'edit'
 const lskeyUsers= 'users'
 const EditPost = () => {
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const {postID} = useParams()
   const navigate = useNavigate()
   const users = useSelector(selectAllUsers)
   const [addRequestStatus,setAddRequestStatus]=useState('idle')
   // console.log(JSON.parse(localStorage.getItem(lskey)))
+  const [deletePost]=useDeletePostMutation()
+  const [updatePost,{isLoading}] = useUpdatePostMutation()
   const post =useSelector((state) => selectPostById(state,Number(postID)))
   ||JSON.parse(localStorage.getItem(lskey))
   // console.log(post)
@@ -30,14 +32,14 @@ const EditPost = () => {
 }  const onTitleInput = (e) => setTitle(e.target.value)
   const onContentInput = (e) => setContent(e.target.value)
   const onAuthorChange = (e) => setUserId(Number(e.target.value))
-  const canSave = [title,content,userId].every(Boolean) && addRequestStatus==='idle'
+  const canSave = [title,content,userId].every(Boolean) && !isLoading
   useEffect(()=>{
     localStorage.setItem(lskey,JSON.stringify(post))
   },[post])
   const handleDelete = (e) =>{
     try{
       setAddRequestStatus('pending')
-      dispatch(deletePost({id: post.id})).unwrap()
+      deletePost({id: post.id}).unwrap()
       navigate('/')
     }catch(err){
       console.error('Failed to delete the post',err)
@@ -49,7 +51,7 @@ const EditPost = () => {
     if(canSave){
       try{
         setAddRequestStatus('pending')
-        dispatch(editPost({id: post.id, title, body: content, userId, reactions: post.reactions})).unwrap()
+        updatePost({id: post.id, title, body: content, userId, reactions: post.reactions}).unwrap()
         setTitle('')
         setContent('')
         setUserId('')
